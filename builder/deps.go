@@ -53,6 +53,8 @@ func (b *Deps) read(path string) (err error) {
 		if os.IsNotExist(err) {
 			addon.Log.Info(err.Error())
 			err = nil
+		} else {
+			err = wrap(err)
 		}
 		return
 	}
@@ -61,5 +63,9 @@ func (b *Deps) read(path string) (err error) {
 	}()
 	d := yaml.NewDecoder(f)
 	err = d.Decode(&b.input)
+	if err != nil {
+		err = wrap(err)
+		return
+	}
 	return
 }

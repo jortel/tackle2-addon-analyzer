@@ -56,6 +56,8 @@ func (r *Analyzer) Run() (insights *builder.Insights, deps *builder.Deps, err er
 			addon.Attach(f)
 		}
 	}
+	//addon.Activity("SLEEP")
+	//time.Sleep(time.Hour)
 	insights, err = builder.NewInsights(output)
 	if err != nil {
 		return

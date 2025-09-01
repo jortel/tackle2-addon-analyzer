@@ -16,6 +16,7 @@ import (
 
 var (
 	addon     = hub.Addon
+	wrap      = addon.Wrap
 	BinDir    = ""
 	SharedDir = ""
 	CacheDir  = ""

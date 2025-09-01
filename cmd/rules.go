@@ -184,6 +184,7 @@ func (r *Rules) addRules(ruleset *api.RuleSet) (err error) {
 		"rules")
 	err = nas.MkDir(ruleDir, 0755)
 	if err != nil {
+		err = wrap(err)
 		return
 	}
 	n := len(ruleset.Rules)
@@ -218,6 +219,7 @@ func (r *Rules) addRuleSetRepository(ruleset *api.RuleSet) (err error) {
 		"repository")
 	err = nas.MkDir(rootDir, 0755)
 	if err != nil {
+		err = wrap(err)
 		return
 	}
 	var ids []api.Ref
@@ -251,6 +253,7 @@ func (r *Rules) addRepository() (err error) {
 		"repository")
 	err = nas.MkDir(rootDir, 0755)
 	if err != nil {
+		err = wrap(err)
 		return
 	}
 	var options []any
@@ -294,6 +297,7 @@ func (r *Rules) ensureRuleSet() (err error) {
 		addon.Activity("[RULE] %s not-found;created.", p)
 		f, err := os.Create(p)
 		if err != nil {
+			err = wrap(err)
 			return
 		}
 		defer func() {
@@ -305,6 +309,10 @@ func (r *Rules) ensureRuleSet() (err error) {
 		part := strings.Split(p, "/")
 		name := strings.Join(part[1:], "-")
 		err = en.Encode(map[string]any{"name": name})
+		if err != nil {
+			err = wrap(err)
+			return
+		}
 		return
 	}
 	for _, ruleDir := range r.rules {
@@ -376,6 +384,7 @@ func (r *Labels) injectAlways(paths []string) (err error) {
 	read := func(m any, p string) (err error) {
 		f, err := os.Open(p)
 		if err != nil {
+			err = wrap(err)
 			return
 		}
 		defer func() {
@@ -383,11 +392,16 @@ func (r *Labels) injectAlways(paths []string) (err error) {
 		}()
 		d := yaml.NewDecoder(f)
 		err = d.Decode(m)
+		if err != nil {
+			err = wrap(err)
+			return
+		}
 		return
 	}
 	write := func(m any, p string) (err error) {
 		f, err := os.Create(p)
 		if err != nil {
+			err = wrap(err)
 			return
 		}
 		defer func() {
@@ -395,6 +409,10 @@ func (r *Labels) injectAlways(paths []string) (err error) {
 		}()
 		en := yaml.NewEncoder(f)
 		err = en.Encode(m)
+		if err != nil {
+			err = wrap(err)
+			return
+		}
 		return
 	}
 	inspect := func(p string, info fs.FileInfo, wErr error) (_ error) {
@@ -431,6 +449,7 @@ func (r *Labels) injectAlways(paths []string) (err error) {
 	for _, ruleDir := range paths {
 		err = filepath.Walk(ruleDir, inspect)
 		if err != nil {
+			err = wrap(err)
 			return
 		}
 	}
